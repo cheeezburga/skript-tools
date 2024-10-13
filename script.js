@@ -8,7 +8,12 @@ let tooltip;
 document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
 	patternInput.addEventListener('input', debounce(parsePattern, 5));
+
 	tooltip = document.getElementById('tooltip');
+
+	initializeTheme();
+	const themeToggleButton = document.getElementById('theme-toggle');
+	themeToggleButton.addEventListener('click', toggleTheme);
 });
 
 // this is basically a limit on how often parsePattern should be called
@@ -151,4 +156,32 @@ function displayError(message) {
 
 	patternsContent.innerHTML = `<p class="error">${message}</p>`;
 	statsContent.innerHTML = '';
+}
+
+function initializeTheme() {
+	const theme = localStorage.getItem('theme') || 'light';
+	const body = document.body;
+	const themeToggleButton = document.getElementById('theme-toggle');
+
+	if (theme === 'dark') {
+		body.classList.add('dark-mode');
+		themeToggleButton.textContent = 'Switch to Light Mode';
+	} else {
+		body.classList.remove('dark-mode');
+		themeToggleButton.textContent = 'Switch to Dark Mode';
+	}
+}
+
+function toggleTheme() {
+	const body = document.body;
+	const themeToggleButton = document.getElementById('theme-toggle');
+	if (body.classList.contains('dark-mode')) {
+		body.classList.remove('dark-mode');
+		themeToggleButton.textContent = 'Switch to Dark Mode';
+		localStorage.setItem('theme', 'light');
+	} else {
+		body.classList.add('dark-mode');
+		themeToggleButton.textContent = 'Switch to Light Mode';
+		localStorage.setItem('theme', 'dark');
+	}
 }
