@@ -3,9 +3,12 @@ import Parser from './js/parser.js';
 import Combinator from './js/combinator.js';
 import ResultProcessor from './js/resultProcessor.js';
 
+let tooltip;
+
 document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
 	patternInput.addEventListener('input', debounce(parsePattern, 5));
+	tooltip = document.getElementById('tooltip');
 });
 
 // this is basically a limit on how often parsePattern should be called
@@ -18,14 +21,14 @@ function debounce(func, delay) {
 }
 
 function parsePattern() {
-	const pattern = document.getElementById('pattern').value.trim();
-	const statsDiv = document.getElementById('statsContent');
-	const patternsDiv = document.getElementById('patternsContent');
+	const pattern = document.getElementById('pattern').value;
+	const statsContent = document.getElementById('statsContent');
+	const patternsContent = document.getElementById('patternsContent');
 
 	// no pattern :(
-	if (!pattern) {
-		patternsDiv.innerText = 'Please enter a pattern.';
-		statsDiv.innerHTML = '';
+	if (!pattern.trim()) {
+		patternsContent.innerText = 'Enter a pattern to get started.';
+		statsContent.innerHTML = '';
 		return;
 	}
 
@@ -39,8 +42,9 @@ function parsePattern() {
 		const combinator = new Combinator();
 		const estimatedCombinations = combinator.estimate(ast);
 
-		const MAX_ALLOWED_COMBINATIONS = 100000; // Adjust as needed
-		if (estimatedCombinations > MAX_ALLOWED_COMBINATIONS) {
+		const MAX_COMBINATIONS = 100000;
+
+		if (estimatedCombinations > MAX_COMBINATIONS) {
 			displayError('Too many combinations!');
 			return;
 		}
@@ -64,88 +68,87 @@ function displayResults(data) {
 		shortestPattern,
 		averagePattern,
 		uniqueParseTags,
-		message,
 	} = data;
-	const statsDiv = document.getElementById('statsContent');
-	const patternsDiv = document.getElementById('patternsContent');
 
-	patternsDiv.innerHTML = '';
+	const statsContent = document.getElementById('statsContent');
+	const patternsContent = document.getElementById('patternsContent');
+	
+	patternsContent.innerHTML = '';
 
 	// update the stats part
 
-	let statsHtml = `<p>Total Patterns: ${totalPatterns}</p>`;
+	let stats = `<p>Total Patterns: ${totalPatterns}</p>`;
+	stats += `<p>Longest Pattern Length: ${longestPattern} characters</p>`;
+	stats += `<p>Shortest Pattern Length: ${shortestPattern} characters</p>`;
+	stats += `<p>Average Pattern Length: ${averagePattern} characters</p>`;
 
-	if (message) {
-		statsHtml += `<p class="error">${message}</p>`;
-		if (statsDiv.innerHTML !== statsHtml) {
-			statsDiv.innerHTML = statsHtml;
-		}
-		return;
-	}
+	if (uniqueParseTags.length > 0)
+		stats += `<p>Unique Parse Tags: ${uniqueParseTags.join(', ')}</p>`;
 
-	statsHtml += `<p>Longest Pattern Length: ${longestPattern} characters</p>`;
-	statsHtml += `<p>Shortest Pattern Length: ${shortestPattern} characters</p>`;
-	statsHtml += `<p>Average Pattern Length: ${averagePattern} characters</p>`;
-	if (uniqueParseTags.length > 0) {
-		statsHtml += `<p>Unique Parse Tags: ${uniqueParseTags.join(', ')}</p>`;
-	}
-	
-	if (totalPatterns > results.length) {
-		statsHtml += `<p>Displaying first ${results.length} of ${totalPatterns} patterns.</p>`;
-	}
+	if (totalPatterns > results.length)
+		stats += `<p>Displaying first ${results.length} of ${totalPatterns} patterns.</p>`;
 
-	// no need to update the stats if theyre the same
-	if (statsDiv.innerHTML !== statsHtml) {
-		statsDiv.innerHTML = statsHtml;
-	}
+	statsContent.innerHTML = stats;
 
-	// sort by length, looks nicer imo
+	// sort by length ascending, looks nicer imo
 	results.sort((a, b) => a.text.length - b.text.length);
 
-	// update the possible patterns part, without clearing it
-	let ul = patternsDiv.querySelector('ul');
-	if (!ul) {
-		ul = document.createElement('ul');
-		patternsDiv.appendChild(ul);
-	}
+	const ul = document.createElement('ul');
+	patternsContent.appendChild(ul);
 
-	// remove extras
-	while (ul.children.length > results.length) {
-		ul.removeChild(ul.lastChild);
-	}
-
-	// update the list
 	for (let i = 0; i < results.length; i++) {
 		const result = results[i];
-		let li;
-		if (ul.children[i]) {
-			li = ul.children[i];
-		} else {
-			li = document.createElement('li');
-			li.className = 'result';
-			ul.appendChild(li);
-		}
+		const li = document.createElement('li');
+		li.className = 'result';
 
-		const strong = document.createElement('strong');
-		strong.textContent = result.text;
-		
-		while (li.firstChild) {
-			li.removeChild(li.firstChild);
-		}
-		
-		li.appendChild(strong);
+		// replace double spaces with single spaces
+		const patternText = result.text.trim().replace(/\s+/g, ' ');
 
-		if (result.tags.length > 0) {
-			const tagsText = ` [Tags: ${result.tags.join(', ')}]`;
-			li.appendChild(document.createTextNode(tagsText));
-		}
+		li.textContent = patternText;
+
+		li.addEventListener('mouseenter', (e) => {
+			if (result.tags.length > 0) {
+				tooltip.innerHTML = `<strong>Parse Tags:</strong><br>${result.tags.join(', ')}`;
+				tooltip.style.display = 'block';
+				positionTooltip(e);
+			}
+		});
+
+		li.addEventListener('mousemove', (e) => {
+			positionTooltip(e);
+		});
+
+		li.addEventListener('mouseleave', () => {
+			tooltip.style.display = 'none';
+		});
+
+		ul.appendChild(li);
 	}
 }
 
-function displayError(message) {
-	const patternsDiv = document.getElementById('patternsContent');
-	const statsDiv = document.getElementById('statsContent');
+function positionTooltip(e) {
+	const tooltipWidth = tooltip.offsetWidth;
+	const tooltipHeight = tooltip.offsetHeight;
+	const pageWidth = window.innerWidth;
+	const pageHeight = window.innerHeight;
 
-	patternsDiv.innerHTML = `<p class="error">${message}</p>`;
-	statsDiv.innerHTML = '';
+	let x = e.clientX + 15;
+	let y = e.clientY + 15;
+
+	// account if out of bounds
+	if (x + tooltipWidth > pageWidth)
+		x = e.clientX - tooltipWidth - 15;
+	if (y + tooltipHeight > pageHeight)
+		y = e.clientY - tooltipHeight - 15;
+
+	tooltip.style.left = x + 'px';
+	tooltip.style.top = y + 'px';
+}
+
+function displayError(message) {
+	const patternsContent = document.getElementById('patternsContent');
+	const statsContent = document.getElementById('statsContent');
+
+	patternsContent.innerHTML = `<p class="error">${message}</p>`;
+	statsContent.innerHTML = '';
 }
