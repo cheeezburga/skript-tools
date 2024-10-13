@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Skript Patterns</title>
+		<style>
+			body { font-family: Arial, sans-serif; margin: 20px; }
+			textarea { width: 100%; height: 100px; }
+			button { margin-top: 10px; }
+			h2 { margin-top: 20px; }
+			ul { list-style-type: none; padding: 0; }
+			li { margin-bottom: 5px; }
+			.result { border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+			.error { color: red; }
+			.box { border: 1px solid #ccc; padding: 10px; margin-top: 10px; min-height: 200px; }
+		</style>
+	</head>
+	<body>
+		<h1>Skript Pattern Parser</h1>
+		<textarea id="pattern" placeholder="Enter your Skript pattern here..."></textarea><br>
+
+		<div id="statistics" class="box">
+			<h2>Statistics</h2>
+			<div id="statsContent">
+			</div>
+		</div>
+
+		<div id="patterns" class="box">
+			<h2>Possible Patterns</h2>
+			<div id="patternsContent">
+			</div>
+		</div>
+
+		<script src="script.js"></script>
+	</body>
+</html>
