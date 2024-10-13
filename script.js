@@ -1,3 +1,8 @@
+import Lexer from './js/lexer.js';
+import Parser from './js/parser.js';
+import Combinator from './js/combinator.js';
+import ResultProcessor from './js/resultProcessor.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
 	patternInput.addEventListener('input', debounce(parsePattern, 5));
@@ -12,7 +17,7 @@ function debounce(func, delay) {
 	};
 }
 
-async function parsePattern() {
+function parsePattern() {
 	const pattern = document.getElementById('pattern').value.trim();
 	const statsDiv = document.getElementById('statsContent');
 	const patternsDiv = document.getElementById('patternsContent');
@@ -25,22 +30,28 @@ async function parsePattern() {
 	}
 
 	try {
-		const response = await fetch('/parse', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ pattern }),
-		});
+		const lexer = new Lexer(pattern);
+		const tokens = lexer.tokenize();
 
-		const data = await response.json();
+		const parser = new Parser(tokens);
+		const ast = parser.parse();
 
-		if (response.ok && !data.error) {
-			displayResults(data);
-		} else {
-			// could maybe have a better error message?
-			displayError('Invalid syntax pattern!');
+		const combinator = new Combinator();
+		const estimatedCombinations = combinator.estimate(ast);
+
+		const MAX_ALLOWED_COMBINATIONS = 100000; // Adjust as needed
+		if (estimatedCombinations > MAX_ALLOWED_COMBINATIONS) {
+			displayError('Too many combinations!');
+			return;
 		}
+
+		const variants = combinator.generate(ast);
+
+		const processor = new ResultProcessor();
+		const data = processor.process(variants);
+
+		displayResults(data);
 	} catch (error) {
-		// could maybe have a better error message?
 		displayError('Invalid syntax pattern!');
 	}
 }

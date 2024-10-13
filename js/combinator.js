@@ -1,4 +1,5 @@
-class Combinator {
+export default class Combinator {
+
 	generate(node) {
 		switch (node.type) {
 			case 'SequenceNode':
@@ -68,5 +69,3 @@ class Combinator {
 		}
 	}
 }
-
-module.exports = Combinator;

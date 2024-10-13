@@ -1,4 +1,4 @@
-class ResultProcessor {
+export default class ResultProcessor {
 	process(results) {
 		const totalPatterns = results.length;
 		let longestPattern = 0;
@@ -37,5 +37,3 @@ class ResultProcessor {
 		};
 	}
 }
-
-module.exports = ResultProcessor;

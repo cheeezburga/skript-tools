@@ -1,13 +1,14 @@
-const {
+import {
 	SequenceNode,
 	OptionalNode,
 	ChoiceNode,
 	ParseTagNode,
 	TextNode,
 	WhitespaceNode,
-} = require('./astNodes');
+} from './astNodes.js';
 
-class Parser {
+export default class Parser {
+
 	constructor(tokens) {
 		this.tokens = tokens;
 		this.position = 0;
@@ -101,6 +102,5 @@ class Parser {
 			throw new Error(`Expected token ${type} but found ${token ? token.type : 'EOF'}`);
 		}
 	}
+	
 }
-
-module.exports = Parser;

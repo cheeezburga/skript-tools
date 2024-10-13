@@ -1,4 +1,5 @@
-class Lexer {
+export default class Lexer {
+
 	constructor(input) {
 		this.input = input;
 		this.position = 0;
@@ -42,6 +43,5 @@ class Lexer {
 		}
 		return { type: 'TEXT', value: text };
 	}
+	
 }
-
-module.exports = Lexer;
