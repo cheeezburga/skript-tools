@@ -48,7 +48,7 @@ class Parser {
 		}
 	}
 
-	parseElement(endTokens) {
+	parseElement() {
 		const token = this.tokens[this.position];
 
 		if (token.type === '[') {

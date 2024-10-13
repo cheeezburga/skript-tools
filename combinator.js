@@ -1,12 +1,3 @@
-const {
-	SequenceNode,
-	OptionalNode,
-	ChoiceNode,
-	ParseTagNode,
-	TextNode,
-	WhitespaceNode,
-} = require('./astNodes');
-
 class Combinator {
 	generate(node) {
 		switch (node.type) {
