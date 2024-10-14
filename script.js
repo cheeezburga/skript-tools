@@ -4,12 +4,15 @@ import Combinator from './js/combinator.js';
 import ResultProcessor from './js/resultProcessor.js';
 
 let tooltip;
+let copyNotification;
 
 document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
 	patternInput.addEventListener('input', debounce(parsePattern, 5));
 
 	tooltip = document.getElementById('tooltip');
+
+	copyNotification = document.getElementById('copy-notification');
 
 	initializeTheme();
 	const themeToggleButton = document.getElementById('theme-toggle');
@@ -47,7 +50,7 @@ function parsePattern() {
 		const combinator = new Combinator();
 		const estimatedCombinations = combinator.estimate(ast);
 
-		const MAX_COMBINATIONS = 100000;
+		const MAX_COMBINATIONS = 100000; // should this be configurable?
 
 		if (estimatedCombinations > MAX_COMBINATIONS) {
 			displayError('Too many combinations!');
@@ -79,21 +82,33 @@ function displayResults(data) {
 	const patternsContent = document.getElementById('patternsContent');
 	
 	patternsContent.innerHTML = '';
+	statsContent.innerHTML = '';
 
 	// update the stats part
 
-	let stats = `<p>Total Patterns: ${totalPatterns}</p>`;
-	stats += `<p>Longest Pattern Length: ${longestPattern} characters</p>`;
-	stats += `<p>Shortest Pattern Length: ${shortestPattern} characters</p>`;
-	stats += `<p>Average Pattern Length: ${averagePattern} characters</p>`;
+	const stats = [
+		{ label: 'Total Patterns', value: totalPatterns },
+		{ label: 'Longest Pattern Length', value: `${longestPattern} characters` },
+		{ label: 'Shortest Pattern Length', value: `${shortestPattern} characters` },
+		{ label: 'Average Pattern Length', value: `${averagePattern} characters` },
+	];
 
 	if (uniqueParseTags.length > 0)
-		stats += `<p>Unique Parse Tags: ${uniqueParseTags.join(', ')}</p>`;
+		stats.push({ label: 'Unique Parse Tags', value: uniqueParseTags.join(', ') });
 
-	if (totalPatterns > results.length)
-		stats += `<p>Displaying first ${results.length} of ${totalPatterns} patterns.</p>`;
+	if (totalPatterns > results.length) {
+		stats.push({
+			label: 'Note',
+			value: `Displaying first ${results.length} of ${totalPatterns} patterns.`,
+		});
+	}
 
-	statsContent.innerHTML = stats;
+	stats.forEach((stat) => {
+		const statItem = document.createElement('div');
+		statItem.className = 'stat-item';
+		statItem.innerHTML = `<strong>${stat.label}:</strong><br>${stat.value}`;
+		statsContent.appendChild(statItem);
+	});
 
 	// sort by length ascending, looks nicer imo
 	results.sort((a, b) => a.text.length - b.text.length);
@@ -125,6 +140,10 @@ function displayResults(data) {
 
 		li.addEventListener('mouseleave', () => {
 			tooltip.style.display = 'none';
+		});
+
+		li.addEventListener('click', () => {
+			copyToClipboard(patternText);
 		});
 
 		ul.appendChild(li);
@@ -184,4 +203,18 @@ function toggleTheme() {
 		themeToggleButton.textContent = 'Switch to Light Mode';
 		localStorage.setItem('theme', 'dark');
 	}
+}
+
+function copyToClipboard(text) {
+	navigator.clipboard.writeText(text).then(
+		() => { showCopyNotification(); },
+		(err) => { console.error('Could not copy text: ', err); }
+	);
+}
+
+function showCopyNotification() {
+	copyNotification.classList.add('show');
+	setTimeout(() => {
+		copyNotification.classList.remove('show');
+	}, 2000);
 }

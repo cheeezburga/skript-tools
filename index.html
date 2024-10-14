@@ -16,6 +16,7 @@
 				--error-color: red;
 				--tooltip-background-color: rgba(0, 0, 0, 0.85);
 				--tooltip-text-color: #fff;
+				--stat-box-background: #f0f0f0;
 			}
 
 			body.dark-mode {
@@ -30,6 +31,7 @@
 				--error-color: #ff6b6b;
 				--tooltip-background-color: rgba(255, 255, 255, 0.85);
 				--tooltip-text-color: #000;
+				--stat-box-background: #2a2a2a;
 			}
 
 			body {
@@ -43,6 +45,7 @@
 				max-width: 800px;
 				margin: 0 auto;
 				padding: 20px;
+				position: relative;
 			}
 			h1 {
 				text-align: center;
@@ -66,20 +69,21 @@
 				overflow: auto;
 			}
 			#statistics {
-				width: 100%;
-				box-sizing: border-box;
-				margin: 0 auto;
-				text-align: center;
 				margin-bottom: 20px;
 			}
-			#patterns {
-				width: 100%;
-				box-sizing: border-box;
-				margin: 0 auto;
-				text-align: center;
-			}
 			#statsContent {
-				text-align: left;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+			}
+			.stat-item {
+				background-color: var(--stat-box-background);
+				border-radius: 5px;
+				padding: 10px;
+				margin: 5px;
+				flex: 0 0 calc(50% - 10px);
+				box-sizing: border-box;
+				text-align: center;
 			}
 			#patternsContent {
 				max-width: 100%;
@@ -97,14 +101,12 @@
 				word-wrap: break-word;
 				font-family: Arial, sans-serif;
 				text-align: left;
-			}
-			li.result:nth-child(odd) {
 				background-color: var(--pattern-odd-background);
+				cursor: pointer;
 			}
 			li.result:nth-child(even) {
 				background-color: var(--pattern-even-background);
 			}
-
 			li.result:hover {
 				background-color: var(--hover-background-color);
 			}
@@ -141,6 +143,22 @@
 			.theme-toggle:hover {
 				background-color: var(--hover-background-color);
 			}
+
+			.copy-notification {
+				position: fixed;
+				bottom: 20px;
+				right: 20px;
+				background-color: var(--box-background-color);
+				color: var(--text-color);
+				border: 1px solid var(--box-border-color);
+				border-radius: 4px;
+				padding: 10px;
+				opacity: 0;
+				transition: opacity 0.3s ease;
+			}
+			.copy-notification.show {
+				opacity: 1;
+			}
 		</style>
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 	</head>
@@ -150,7 +168,7 @@
 
 			<h1>Skript Pattern Parser</h1>
 			<textarea id="pattern" placeholder="Enter your Skript pattern here..."></textarea>
-			
+
 			<div id="statistics" class="box">
 				<h2>Statistics</h2>
 				<div id="statsContent">
@@ -165,6 +183,10 @@
 		</div>
 
 		<div id="tooltip" class="tooltip">
+		</div>
+
+		<div id="copy-notification" class="copy-notification">
+			Pattern copied to clipboard!
 		</div>
 
 		<script type="module" src="script.js"></script>
