@@ -3,6 +3,7 @@ import Parser from './js/parser.js';
 import Combinator from './js/combinator.js';
 import ResultProcessor from './js/resultProcessor.js';
 
+let patternInput;
 let tooltip;
 let copyNotification;
 let allData = null;
@@ -19,8 +20,8 @@ let totalPagesSpan;
 let displayCount;
 
 document.addEventListener('DOMContentLoaded', () => {
-	const patternInput = document.getElementById('pattern');
 	const themeToggleButton = document.getElementById('theme-toggle');
+	patternInput = document.getElementById('pattern');
 	patternsContent = document.getElementById('patternsContent');
 	statsContent = document.getElementById('statsContent');
 	prevPageButton = document.getElementById('prev-page');
@@ -69,13 +70,14 @@ function debounce(func, delay) {
 }
 
 function parsePattern() {
-	const pattern = document.getElementById('pattern').value;
+	const pattern = patternInput.value;
 
 	// no pattern :(
 	if (!pattern.trim()) {
 		patternsContent.innerText = 'Enter a pattern to get started.';
 		statsContent.innerHTML = '';
 		resetPagination();
+		patternInput.classList.remove('input-error');
 		return;
 	}
 
@@ -93,9 +95,7 @@ function parsePattern() {
 		const MAX_COMBINATIONS = 100000; // should this be configurable?
 
 		if (estimatedCombinations > MAX_COMBINATIONS) {
-			console.log('Too many combinations!');
 			displayError('Too many combinations!');
-			resetPagination();
 			return;
 		}
 
@@ -115,10 +115,10 @@ function parsePattern() {
 		updatePagination();
 		displayStatistics();
 		showPage(currentPage);
+		
+		patternInput.classList.remove('input-error');
 	} catch (error) {
-		console.error('Invalid syntax pattern: ', error);
 		displayError('Invalid syntax pattern!');
-		resetPagination();
 	}
 }
 
@@ -260,10 +260,12 @@ function positionTooltip(e) {
 }
 
 function displayError(message) {
+	resetPagination();
+
 	patternsContent.innerHTML = `<p class="error">${message}</p>`;
 	statsContent.innerHTML = '';
 
-	resetPagination();
+	patternInput.classList.add('input-error');
 }
 
 function initializeTheme() {
