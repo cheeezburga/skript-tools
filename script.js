@@ -11,6 +11,7 @@ let currentPage = 1;
 let totalPages = 1;
 let resultsPerPage = 100;
 let patternsContent;
+let statsContent;
 let prevPageButton;
 let nextPageButton;
 let currentPageInput;
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
 	const themeToggleButton = document.getElementById('theme-toggle');
 	patternsContent = document.getElementById('patternsContent');
+	statsContent = document.getElementById('statsContent');
 	prevPageButton = document.getElementById('prev-page');
 	nextPageButton = document.getElementById('next-page');
 	currentPageInput = document.getElementById('current-page');
@@ -68,7 +70,6 @@ function debounce(func, delay) {
 
 function parsePattern() {
 	const pattern = document.getElementById('pattern').value;
-	const statsContent = document.getElementById('statsContent');
 
 	// no pattern :(
 	if (!pattern.trim()) {
@@ -87,10 +88,12 @@ function parsePattern() {
 
 		const combinator = new Combinator();
 		const estimatedCombinations = combinator.estimate(ast);
+		console.log('Estimated combinations: ', estimatedCombinations);
 
 		const MAX_COMBINATIONS = 100000; // should this be configurable?
 
 		if (estimatedCombinations > MAX_COMBINATIONS) {
+			console.log('Too many combinations!');
 			displayError('Too many combinations!');
 			resetPagination();
 			return;
@@ -113,6 +116,7 @@ function parsePattern() {
 		displayStatistics();
 		showPage(currentPage);
 	} catch (error) {
+		console.error('Invalid syntax pattern: ', error);
 		displayError('Invalid syntax pattern!');
 		resetPagination();
 	}
@@ -148,11 +152,7 @@ function updatePaginationControls() {
 	nextPageButton.disabled = currentPage >= totalPages;
 
 	const paginationDiv = document.querySelector('.pagination');
-	if (allResults && allResults.length > 0) {
-		paginationDiv.style.display = 'flex';
-	} else {
-		paginationDiv.style.display = 'none';
-	}
+	paginationDiv.style.display = 'flex';
 }
 
 function displayStatistics() {
@@ -164,7 +164,6 @@ function displayStatistics() {
 		uniqueParseTags,
 	} = allData;
 
-	const statsContent = document.getElementById('statsContent');
 	statsContent.innerHTML = '';
 
 	const stats = [
@@ -191,7 +190,7 @@ function showPage(page) {
 	updatePaginationControls();
 
 	const startIndex = (currentPage - 1) * resultsPerPage;
-	const endIndex = startIndex + resultsPerPage;
+	let endIndex = startIndex + resultsPerPage;
 	if (endIndex > allResults.length)
 		endIndex = allResults.length;
 	const pageResults = allResults.slice(startIndex, endIndex);
@@ -261,9 +260,6 @@ function positionTooltip(e) {
 }
 
 function displayError(message) {
-	const patternsContent = document.getElementById('patternsContent');
-	const statsContent = document.getElementById('statsContent');
-
 	patternsContent.innerHTML = `<p class="error">${message}</p>`;
 	statsContent.innerHTML = '';
 

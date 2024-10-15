@@ -11,9 +11,10 @@ export default class Combinator {
 			case 'ChoiceNode':
 				let results = [];
 				for (const choice of node.choices) {
-					results = results.concat(this.generate(choice));
+					const choiceResults = this.generate(choice);
+					results = results.concat(choiceResults);
 				}
-				return results;
+				return results.length > 0 ? results : [{ text: '', tags: [] }];
 			case 'ParseTagNode':
 				const parseResults = this.generate(node.node);
 				for (const result of parseResults) {
@@ -30,13 +31,12 @@ export default class Combinator {
 	}
 
 	combineNodes(nodes) {
-		if (nodes.length === 0) {
+		if (nodes.length === 0)
 			return [{ text: '', tags: [] }];
-		}
 
 		const [firstNode, ...restNodes] = nodes;
-		const firstResults = this.generate(firstNode);
-		const restResults = this.combineNodes(restNodes);
+		const firstResults = this.generate(firstNode) || [{ text: '', tags: [] }];
+		const restResults = this.combineNodes(restNodes) || [{ text: '', tags: [] }];
 
 		const combinedResults = [];
 
