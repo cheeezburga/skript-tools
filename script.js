@@ -5,18 +5,56 @@ import ResultProcessor from './js/resultProcessor.js';
 
 let tooltip;
 let copyNotification;
+let allData = null;
+let allResults = [];
+let currentPage = 1;
+let totalPages = 1;
+let resultsPerPage = 100;
+let patternsContent;
+let prevPageButton;
+let nextPageButton;
+let currentPageInput;
+let totalPagesSpan;
+let displayCount;
 
 document.addEventListener('DOMContentLoaded', () => {
 	const patternInput = document.getElementById('pattern');
+	const themeToggleButton = document.getElementById('theme-toggle');
+	patternsContent = document.getElementById('patternsContent');
+	prevPageButton = document.getElementById('prev-page');
+	nextPageButton = document.getElementById('next-page');
+	currentPageInput = document.getElementById('current-page');
+	totalPagesSpan = document.getElementById('total-pages');
+	displayCount = document.getElementById('display-count');
+
+	displayCount.value = '100';
+
+	// pattern input listener
 	patternInput.addEventListener('input', debounce(parsePattern, 5));
 
+	// possible pattern related stuff
 	tooltip = document.getElementById('tooltip');
-
 	copyNotification = document.getElementById('copy-notification');
 
+	// theme stuff
 	initializeTheme();
-	const themeToggleButton = document.getElementById('theme-toggle');
 	themeToggleButton.addEventListener('click', toggleTheme);
+
+	// pagination listeners
+	prevPageButton.addEventListener('click', () => changePage(currentPage - 1));
+	nextPageButton.addEventListener('click', () => changePage(currentPage + 1));
+	currentPageInput.addEventListener('change', (e) => {
+		let page = parseInt(e.target.value);
+		if (isNaN(page) || page < 1) page = 1;
+		if (page > totalPages) page = totalPages;
+		changePage(page);
+	});
+	displayCount.addEventListener('change', () => {
+		updateResultsPerPage();
+		currentPage = 1;
+		updatePagination();
+		showPage(currentPage);
+	});
 });
 
 // this is basically a limit on how often parsePattern should be called
@@ -31,12 +69,12 @@ function debounce(func, delay) {
 function parsePattern() {
 	const pattern = document.getElementById('pattern').value;
 	const statsContent = document.getElementById('statsContent');
-	const patternsContent = document.getElementById('patternsContent');
 
 	// no pattern :(
 	if (!pattern.trim()) {
 		patternsContent.innerText = 'Enter a pattern to get started.';
 		statsContent.innerHTML = '';
+		resetPagination();
 		return;
 	}
 
@@ -54,6 +92,7 @@ function parsePattern() {
 
 		if (estimatedCombinations > MAX_COMBINATIONS) {
 			displayError('Too many combinations!');
+			resetPagination();
 			return;
 		}
 
@@ -62,29 +101,71 @@ function parsePattern() {
 		const processor = new ResultProcessor();
 		const data = processor.process(variants);
 
-		displayResults(data);
+		// sort by length, looks nicer imo
+		data.results.sort((a, b) => a.text.length - b.text.length);
+
+		allData = data;
+		allResults = data.results;
+		currentPage = 1;
+
+		updateResultsPerPage();
+		updatePagination();
+		displayStatistics();
+		showPage(currentPage);
 	} catch (error) {
 		displayError('Invalid syntax pattern!');
+		resetPagination();
 	}
 }
 
-function displayResults(data) {
+function updateResultsPerPage() {
+	const displayValue = displayCount.value;
+	if (displayValue === 'all') {
+		resultsPerPage = allResults.length;
+	} else {
+		const parsedValue = parseInt(displayValue);
+		if (!isNaN(parsedValue) && parsedValue > 0) {
+			resultsPerPage = parsedValue;
+		} else {
+			resultsPerPage = 10; // fallback - should never get here tho
+		}
+	}
+}
+
+function updatePagination() {
+	totalPages = Math.ceil(allResults.length / resultsPerPage);
+	if (totalPages === 0)
+		totalPages = 1;
+	currentPage = Math.min(currentPage, totalPages);
+	updatePaginationControls();
+}
+
+function updatePaginationControls() {
+	totalPagesSpan.textContent = `/ ${totalPages}`;
+	currentPageInput.value = currentPage;
+
+	prevPageButton.disabled = currentPage <= 1;
+	nextPageButton.disabled = currentPage >= totalPages;
+
+	const paginationDiv = document.querySelector('.pagination');
+	if (allResults && allResults.length > 0) {
+		paginationDiv.style.display = 'flex';
+	} else {
+		paginationDiv.style.display = 'none';
+	}
+}
+
+function displayStatistics() {
 	const {
-		results,
 		totalPatterns,
 		longestPattern,
 		shortestPattern,
 		averagePattern,
 		uniqueParseTags,
-	} = data;
+	} = allData;
 
 	const statsContent = document.getElementById('statsContent');
-	const patternsContent = document.getElementById('patternsContent');
-	
-	patternsContent.innerHTML = '';
 	statsContent.innerHTML = '';
-
-	// update the stats part
 
 	const stats = [
 		{ label: 'Total Patterns', value: totalPatterns },
@@ -96,28 +177,29 @@ function displayResults(data) {
 	if (uniqueParseTags.length > 0)
 		stats.push({ label: 'Unique Parse Tags', value: uniqueParseTags.join(', ') });
 
-	if (totalPatterns > results.length) {
-		stats.push({
-			label: 'Note',
-			value: `Displaying first ${results.length} of ${totalPatterns} patterns.`,
-		});
-	}
-
 	stats.forEach((stat) => {
 		const statItem = document.createElement('div');
 		statItem.className = 'stat-item';
 		statItem.innerHTML = `<strong>${stat.label}:</strong><br>${stat.value}`;
 		statsContent.appendChild(statItem);
 	});
+}
 
-	// sort by length ascending, looks nicer imo
-	results.sort((a, b) => a.text.length - b.text.length);
+function showPage(page) {
+	patternsContent.innerHTML = '';
+	currentPage = page;
+	updatePaginationControls();
+
+	const startIndex = (currentPage - 1) * resultsPerPage;
+	const endIndex = startIndex + resultsPerPage;
+	if (endIndex > allResults.length)
+		endIndex = allResults.length;
+	const pageResults = allResults.slice(startIndex, endIndex);
 
 	const ul = document.createElement('ul');
 	patternsContent.appendChild(ul);
 
-	for (let i = 0; i < results.length; i++) {
-		const result = results[i];
+	pageResults.forEach((result) => {
 		const li = document.createElement('li');
 		li.className = 'result';
 
@@ -133,21 +215,30 @@ function displayResults(data) {
 				positionTooltip(e);
 			}
 		});
-
-		li.addEventListener('mousemove', (e) => {
-			positionTooltip(e);
-		});
-
-		li.addEventListener('mouseleave', () => {
-			tooltip.style.display = 'none';
-		});
-
-		li.addEventListener('click', () => {
-			copyToClipboard(patternText);
-		});
+		li.addEventListener('mousemove', (e) => { positionTooltip(e); });
+		li.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+		li.addEventListener('click', () => { copyToClipboard(patternText); });
 
 		ul.appendChild(li);
-	}
+	});
+}
+
+function changePage(page) {
+	if (page < 1)
+		page = 1;
+	if (page > totalPages)
+		page = totalPages;
+	currentPage = page;
+	showPage(currentPage);
+}
+
+function resetPagination() {
+	allData = null;
+	allResults = [];
+	currentPage = 1;
+	totalPages = 1;
+	patternsContent.innerHTML = '';
+	updatePaginationControls();
 }
 
 function positionTooltip(e) {
@@ -175,6 +266,8 @@ function displayError(message) {
 
 	patternsContent.innerHTML = `<p class="error">${message}</p>`;
 	statsContent.innerHTML = '';
+
+	resetPagination();
 }
 
 function initializeTheme() {

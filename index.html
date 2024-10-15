@@ -47,7 +47,7 @@
 				padding: 20px;
 				position: relative;
 			}
-			h1 {
+			h1, h2 {
 				text-align: center;
 			}
 			#pattern {
@@ -154,10 +154,55 @@
 				border-radius: 4px;
 				padding: 10px;
 				opacity: 0;
-				transition: opacity 0.3s ease;
+				transition: opacity 0.2s ease;
 			}
 			.copy-notification.show {
 				opacity: 1;
+			}
+
+			.controls-container {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				align-items: center;
+				margin-bottom: 10px;
+			}
+			.options, .pagination {
+				display: flex;
+				align-items: center;
+				margin-bottom: 0;
+			}
+			.options label {
+				margin-right: 5px;
+			}
+			.options select {
+				padding: 5px;
+			}
+			.pagination button {
+				margin: 0 5px;
+				padding: 5px 10px;
+				background-color: var(--box-background-color);
+				color: var(--text-color);
+				border: 1px solid var(--box-border-color);
+				border-radius: 4px;
+				cursor: pointer;
+			}
+			.pagination button:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+			.pagination input {
+				width: 50px;
+				text-align: center;
+				padding: 5px;
+				margin: 0 5px;
+				background-color: var(--box-background-color);
+				color: var(--text-color);
+				border: 1px solid var(--box-border-color);
+				border-radius: 4px;
+			}
+			.pagination span {
+				font-size: 14px;
 			}
 		</style>
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -177,6 +222,26 @@
 
 			<div id="patterns" class="box">
 				<h2>Possible Patterns</h2>
+
+				<div class="controls-container">
+					<div class="options">
+						<label for="display-count">Display:</label>
+						<select id="display-count">
+							<option value="10">10</option>
+							<option value="100">100</option>
+							<option value="500">500</option>
+							<option value="1000">1000</option>
+							<option value="all">All</option>
+						</select>
+					</div>
+					<div class="pagination">
+						<button id="prev-page">Previous</button>
+						<input type="number" id="current-page" min="1" value="1">
+						<span id="total-pages">/ 1</span>
+						<button id="next-page">Next</button>
+					</div>
+				</div>
+
 				<div id="patternsContent">
 				</div>
 			</div>

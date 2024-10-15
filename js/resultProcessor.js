@@ -5,12 +5,7 @@ export default class ResultProcessor {
 		let shortestPattern = Infinity;
 		let totalLength = 0;
 		const parseTagsSet = new Set();
-
-		const MAX_RESULTS = 100; // should this be a configurable option?
-		if (results.length > MAX_RESULTS) {
-			results = results.slice(0, MAX_RESULTS);
-		}
-
+		
 		for (const result of results) {
 			const length = result.text.length;
 			totalLength += length;
