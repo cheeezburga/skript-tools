@@ -1,0 +1,290 @@
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+h2 {
+	margin-top: 0;
+}
+
+.box {
+	background-color: var(--box-background-color);
+	border: 2px solid var(--box-border-color);
+	border-radius: 8px;
+	padding: 10px;
+	margin-top: 20px;
+}
+
+.box h2 {
+	text-align: center;
+}
+
+#guide {
+	padding: 20px;
+}
+
+#guide .guide-tip {
+	background-color: var(--tip-background-color);
+	border: 1px solid var(--tip-border-color);
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+#guide .guide-tip:hover {
+	background-color: var(--tip-hover-background-color);
+}
+
+#guide code {
+	background-color: var(--box-background-color);
+	padding: 2px 4px;
+	border-radius: 4px;
+}
+
+:root {
+	--tip-background-color: #f0f0f0;
+	--tip-border-color: #ccc;
+	--tip-hover-background-color: #e0e0e0;
+}
+
+body.dark-mode {
+	--tip-background-color: #333;
+	--tip-border-color: #555;
+	--tip-hover-background-color: #444;
+}
+
+#lore-input {
+	margin-top: 20px;
+}
+
+#lore-textarea {
+	width: 100%;
+	height: calc(1.2em * 5 + 20px);
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	padding: 5px;
+	resize: none;
+	font-family: 'Minecraftia', monospace;
+	font-size: 14px;
+	line-height: 1.2;
+	white-space: pre;
+	overflow-x: auto;
+	overflow-y: hidden;
+	box-sizing: border-box;
+}
+
+#live-preview {
+	margin-top: 20px;
+}
+
+#preview-container {
+	margin-top: 10px;
+	display: flex;
+	justify-content: center;
+}
+
+.preview-tooltip {
+	background-color: black;
+	color: white;
+	padding: 10px;
+	border: 1px solid var(--box-border-color);
+	border-radius: 5px;
+	position: relative;
+	display: inline-block;
+}
+
+#preview-content {
+	font-family: 'Minecraftia', monospace;
+	white-space: pre;
+	font-size: 14px;
+	line-height: 1.2;
+}
+
+.preview-line {
+	white-space: pre;
+}
+
+#generated-code {
+	margin-top: 20px;
+}
+
+#code-container {
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	padding: 5px;
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	overflow-x: auto;
+	text-align: left;
+	min-height: calc(1.2em + 10px);
+	max-height: calc(1.2em * 3 + 10px);
+	box-sizing: border-box;
+}
+
+.button-group {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.button-group button {
+	padding: 10px 20px;
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.button-group button:hover {
+	background-color: var(--hover-background-color);
+}
+
+.copy-notification {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	padding: 10px;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.copy-notification.show {
+	opacity: 1;
+}
+
+#saved-lores {
+	margin-top: 20px;
+}
+
+#saved-lores-container {
+	margin-top: 10px;
+}
+
+.saved-lore {
+	padding: 10px;
+	position: relative;
+	font-family: monospace;
+	border-bottom: 1px solid var(--box-border-color);
+}
+
+.saved-lore:first-child {
+	border-top: 1px solid var(--box-border-color);
+}
+
+.saved-lore:nth-child(odd) {
+	background-color: var(--box-background-color);
+}
+
+.saved-lore .button-group {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+.saved-lore .button-group button {
+	margin-left: 5px;
+	padding: 5px 10px;
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.saved-lore .button-group button:hover {
+	background-color: var(--hover-background-color);
+}
+
+.header-content {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 10px 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.home-link {
+	position: absolute;
+	left: 20px;
+	display: flex;
+	align-items: center;
+}
+
+.home-icon {
+	width: 28px;
+	height: 28px;
+}
+
+.tool-name {
+	font-size: 24px;
+	font-weight: bold;
+	margin: 0;
+}
+
+.theme-toggle {
+	position: absolute;
+	right: 20px;
+	background-color: var(--box-background-color);
+	color: var(--text-color);
+	border: 1px solid var(--box-border-color);
+	border-radius: 4px;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.theme-toggle:hover {
+	background-color: var(--hover-background-color);
+}
+
+@font-face {
+	font-family: 'Minecraftia';
+	src: url('../fonts/Minecraftia-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.obfuscated {
+	display: inline-block;
+	animation: obfuscate 0.1s steps(1) infinite;
+}
+
+@keyframes obfuscate {
+	from { opacity: 1; }
+	to { opacity: 1; }
+}
+
+.underline {
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: -5px;
+}
+
+.strikethrough {
+	position: relative;
+}
+
+.strikethrough::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 50%;
+	transform: translateY(-5px);
+	border-top: 1px solid currentColor;
+	pointer-events: none;
+}
+
+body, .box, .theme-toggle, .button-group button, #lore-textarea, #code-container, .saved-lore, .saved-lore .button-group button {
+	transition: none;
+}

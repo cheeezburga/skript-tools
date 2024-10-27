@@ -1,263 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>Skript Patterns</title>
-		<style>
-			:root {
-				/* light theme */
-				--background-color: #f5f5f5;
-				--text-color: #000;
-				--box-background-color: #fff;
-				--box-border-color: #888;
-				--hover-background-color: #d9d9d9;
-				--pattern-odd-background: #f9f9f9;
-				--pattern-even-background: #e9e9e9;
-				--error-color: red;
-				--tooltip-background-color: rgba(0, 0, 0, 0.85);
-				--tooltip-text-color: #fff;
-				--stat-box-background: #f0f0f0;
-			}
-
-			body.dark-mode {
-				/* dark theme */
-				--background-color: #1e1e1e;
-				--text-color: #fff;
-				--box-background-color: #2e2e2e;
-				--box-border-color: #555;
-				--hover-background-color: #3e3e3e;
-				--pattern-odd-background: #2e2e2e;
-				--pattern-even-background: #383838;
-				--error-color: #ff6b6b;
-				--tooltip-background-color: rgba(255, 255, 255, 0.85);
-				--tooltip-text-color: #000;
-				--stat-box-background: #2a2a2a;
-			}
-
-			body {
-				font-family: Arial, sans-serif;
-				margin: 0;
-				padding: 0;
-				background-color: var(--background-color);
-				color: var(--text-color);
-			}
-			.container {
-				max-width: 800px;
-				margin: 0 auto;
-				padding: 20px;
-				position: relative;
-			}
-			h1, h2 {
-				text-align: center;
-			}
-			#pattern {
-				width: 100%;
-				height: 60px;
-				box-sizing: border-box;
-				margin-bottom: 20px;
-				resize: none;
-				background-color: var(--box-background-color);
-				color: var(--text-color);
-				border: 1px solid var(--box-border-color);
-			}
-			#pattern.input-error {
-				background-color: #ffe6e6 !important;
-				border-color: #ff4d4d !important;
-			}
-			.box {
-				border: 2px solid var(--box-border-color);
-				border-radius: 8px;
-				padding: 10px;
-				margin-top: 20px;
-				background-color: var(--box-background-color);
-				overflow: auto;
-			}
-			#statistics {
-				margin-bottom: 20px;
-			}
-			#statsContent {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: space-between;
-			}
-			.stat-item {
-				background-color: var(--stat-box-background);
-				border-radius: 5px;
-				padding: 10px;
-				margin: 5px;
-				flex: 0 0 calc(50% - 10px);
-				box-sizing: border-box;
-				text-align: center;
-			}
-			#patternsContent {
-				max-width: 100%;
-				overflow-x: auto;
-			}
-			ul {
-				list-style-type: none;
-				padding: 0;
-				margin: 0;
-			}
-			li.result {
-				padding: 10px;
-				position: relative;
-				white-space: pre-wrap;
-				word-wrap: break-word;
-				font-family: Arial, sans-serif;
-				text-align: left;
-				background-color: var(--pattern-odd-background);
-				cursor: pointer;
-			}
-			li.result:nth-child(even) {
-				background-color: var(--pattern-even-background);
-			}
-			li.result:hover {
-				background-color: var(--hover-background-color);
-			}
-			.error {
-				color: var(--error-color);
-				text-align: center;
-			}
-			
-			.tooltip {
-				position: fixed;
-				background-color: var(--tooltip-background-color);
-				color: var(--tooltip-text-color);
-				padding: 8px;
-				border-radius: 4px;
-				white-space: pre-wrap;
-				font-size: 12px;
-				z-index: 444;
-				display: none;
-				pointer-events: none;
-				max-width: 300px;
-			}
-
-			.theme-toggle {
-				position: absolute;
-				top: 20px;
-				right: 20px;
-				background-color: var(--box-background-color);
-				color: var(--text-color);
-				border: 1px solid var(--box-border-color);
-				border-radius: 4px;
-				padding: 5px 10px;
-				cursor: pointer;
-			}
-			.theme-toggle:hover {
-				background-color: var(--hover-background-color);
-			}
-
-			.copy-notification {
-				position: fixed;
-				bottom: 20px;
-				right: 20px;
-				background-color: var(--box-background-color);
-				color: var(--text-color);
-				border: 1px solid var(--box-border-color);
-				border-radius: 4px;
-				padding: 10px;
-				opacity: 0;
-				transition: opacity 0.2s ease;
-			}
-			.copy-notification.show {
-				opacity: 1;
-			}
-
-			.controls-container {
-				display: flex;
-				flex-wrap: wrap;
-				justify-content: space-between;
-				align-items: center;
-				margin-bottom: 10px;
-			}
-			.options, .pagination {
-				display: flex;
-				align-items: center;
-				margin-bottom: 0;
-			}
-			.options label {
-				margin-right: 5px;
-			}
-			.options select {
-				padding: 5px;
-			}
-			.pagination button {
-				margin: 0 5px;
-				padding: 5px 10px;
-				background-color: var(--box-background-color);
-				color: var(--text-color);
-				border: 1px solid var(--box-border-color);
-				border-radius: 4px;
-				cursor: pointer;
-			}
-			.pagination button:disabled {
-				opacity: 0.5;
-				cursor: not-allowed;
-			}
-			.pagination input {
-				width: 50px;
-				text-align: center;
-				padding: 5px;
-				margin: 0 5px;
-				background-color: var(--box-background-color);
-				color: var(--text-color);
-				border: 1px solid var(--box-border-color);
-				border-radius: 4px;
-			}
-			.pagination span {
-				font-size: 14px;
-			}
-		</style>
+		<title>Skript Tools</title>
+		<link rel="stylesheet" href="style.css">
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 	</head>
 	<body>
+		<header class="header">
+			<div class="header-content">
+				<h1 class="tool-name">Welcome to Skript Tools</h1>
+				<button id="theme-toggle" class="theme-toggle">Switch to Dark Mode</button>
+			</div>
+		</header>
+
 		<div class="container">
-			<button id="theme-toggle" class="theme-toggle">Switch to Dark Mode</button>
-
-			<h1>Skript Pattern Parser</h1>
-			<textarea id="pattern" placeholder="Enter your Skript pattern here..."></textarea>
-
-			<div id="statistics" class="box">
-				<h2>Statistics</h2>
-				<div id="statsContent">
-				</div>
-			</div>
-
-			<div id="patterns" class="box">
-				<h2>Possible Patterns</h2>
-
-				<div class="controls-container">
-					<div class="options">
-						<label for="display-count">Display:</label>
-						<select id="display-count">
-							<option value="10">10</option>
-							<option value="100">100</option>
-							<option value="500">500</option>
-							<option value="1000">1000</option>
-							<option value="all">All</option>
-						</select>
-					</div>
-					<div class="pagination">
-						<button id="prev-page">Previous</button>
-						<input type="number" id="current-page" min="1" value="1">
-						<span id="total-pages">/ 1</span>
-						<button id="next-page">Next</button>
-					</div>
-				</div>
-
-				<div id="patternsContent">
-				</div>
+			<div class="tool-menu">
+				<a href="pattern-parser/index.html" class="tool-card">
+					<h2>Pattern Parser</h2>
+					<p>Generate the possible patterns and statistics of a Skript syntax.</p>
+				</a>
+				<a href="lore-generator/index.html" class="tool-card">
+					<h2>Lore Generator</h2>
+					<p>Create custom item lores with formatting options, ready for your scripts.</p>
+				</a>
 			</div>
 		</div>
 
-		<div id="tooltip" class="tooltip">
-		</div>
-
-		<div id="copy-notification" class="copy-notification">
-			Pattern copied to clipboard!
-		</div>
-
-		<script type="module" src="script.js"></script>
+		<script src="script.js"></script>
 	</body>
 </html>
