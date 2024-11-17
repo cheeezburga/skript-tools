@@ -1,55 +1,60 @@
 export default class Combinator {
 
-	generate(node) {
+	generate(node, inheritedTags = []) {
 		switch (node.type) {
 			case 'SequenceNode':
-				return this.combineNodes(node.nodes);
+				return this.combineSequences(node.nodes, inheritedTags);
 			case 'OptionalNode':
-				const withNode = this.generate(node.node);
-				const withoutNode = [{ text: '', tags: [] }];
+				const withNode = this.generate(node.node, inheritedTags);
+				const withoutNode = [{ text: '', tags: [...inheritedTags] }];
 				return withNode.concat(withoutNode);
 			case 'ChoiceNode':
 				let results = [];
 				for (const choice of node.choices) {
-					const choiceResults = this.generate(choice);
+					const choiceResults = this.generate(choice, inheritedTags);
 					results = results.concat(choiceResults);
 				}
-				return results.length > 0 ? results : [{ text: '', tags: [] }];
+				return results;
 			case 'ParseTagNode':
-				const parseResults = this.generate(node.node);
+				const parseResults = this.generate(node.node, inheritedTags);
 				for (const result of parseResults) {
-					result.tags.push(result.text.trim());
+					const tagToAdd =
+					node.tagName !== null ? node.tagName : result.text.trim();
+					result.tags.push(tagToAdd);
 				}
 				return parseResults;
 			case 'TextNode':
-				return [{ text: node.text, tags: [] }];
+				return [{ text: node.text, tags: [...inheritedTags] }];
 			case 'WhitespaceNode':
-				return [{ text: node.value, tags: [] }];
+				return [{ text: node.value, tags: [...inheritedTags] }];
 			default:
 				throw new Error(`Unknown node type: ${node.type}`);
 		}
 	}
 
-	combineNodes(nodes) {
+	combineSequences(nodes, inheritedTags) {
 		if (nodes.length === 0)
-			return [{ text: '', tags: [] }];
+			return [{ text: '', tags: [...inheritedTags] }];
 
-		const [firstNode, ...restNodes] = nodes;
-		const firstResults = this.generate(firstNode) || [{ text: '', tags: [] }];
-		const restResults = this.combineNodes(restNodes) || [{ text: '', tags: [] }];
+		let results = this.generate(nodes[0], inheritedTags);
 
-		const combinedResults = [];
+		for (let i = 1; i < nodes.length; i++) {
+			const nextResults = this.generate(nodes[i], inheritedTags);
+			const combinedResults = [];
 
-		for (const firstResult of firstResults) {
-			for (const restResult of restResults) {
-				combinedResults.push({
-					text: firstResult.text + restResult.text,
-					tags: [...firstResult.tags, ...restResult.tags],
-				});
+			for (const res1 of results) {
+				for (const res2 of nextResults) {
+					combinedResults.push({
+					text: res1.text + res2.text,
+					tags: [...new Set([...res1.tags, ...res2.tags])],
+					});
+				}
 			}
+
+			results = combinedResults;
 		}
 
-		return combinedResults;
+		return results;
 	}
 
 	estimate(node) {
@@ -61,6 +66,7 @@ export default class Combinator {
 			case 'ChoiceNode':
 				return node.choices.reduce((acc, choice) => acc + this.estimate(choice), 0);
 			case 'ParseTagNode':
+				return this.estimate(node.node);
 			case 'TextNode':
 			case 'WhitespaceNode':
 				return 1;
@@ -68,4 +74,5 @@ export default class Combinator {
 				throw new Error(`Unknown node type: ${node.type}`);
 		}
 	}
+	
 }

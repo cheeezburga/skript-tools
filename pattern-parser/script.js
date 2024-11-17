@@ -48,8 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	nextPageButton.addEventListener('click', () => changePage(currentPage + 1));
 	currentPageInput.addEventListener('change', (e) => {
 		let page = parseInt(e.target.value);
-		if (isNaN(page) || page < 1) page = 1;
-		if (page > totalPages) page = totalPages;
+		if (isNaN(page) || page < 1)
+			page = 1;
+		if (page > totalPages)
+			page = totalPages;
 		changePage(page);
 	});
 	displayCount.addEventListener('change', () => {
@@ -115,7 +117,7 @@ function parsePattern() {
 		updatePagination();
 		displayStatistics();
 		showPage(currentPage);
-		
+
 		patternInput.classList.remove('input-error');
 	} catch (error) {
 		displayError('Invalid syntax pattern!');

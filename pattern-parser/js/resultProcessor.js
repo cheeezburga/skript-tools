@@ -1,11 +1,12 @@
 export default class ResultProcessor {
+	
 	process(results) {
 		const totalPatterns = results.length;
 		let longestPattern = 0;
 		let shortestPattern = Infinity;
 		let totalLength = 0;
 		const parseTagsSet = new Set();
-		
+
 		for (const result of results) {
 			const length = result.text.length;
 			totalLength += length;
@@ -31,4 +32,5 @@ export default class ResultProcessor {
 			uniqueParseTags,
 		};
 	}
+
 }

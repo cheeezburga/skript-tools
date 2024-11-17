@@ -1,3 +1,13 @@
+:root {
+	--error-background-color: #ffe6e6;
+	--error-border-color: #ff4d4d;
+}
+
+body.dark-mode {
+	--error-background-color: #5c1a1a;
+	--error-border-color: #ff4d4d;
+}
+
 .container {
 	margin-top: 20px;
 }
@@ -19,11 +29,13 @@ h2 {
 	background-color: var(--box-background-color);
 	color: var(--text-color);
 	border: 1px solid var(--box-border-color);
+	font-family: monospace;
+	font-size: 14px;
 }
 
 #pattern.input-error {
-	background-color: #ffe6e6 !important;
-	border-color: #ff4d4d !important;
+	background-color: var(--error-background-color);
+	border-color: var(--error-border-color);
 }
 
 .box {

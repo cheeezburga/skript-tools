@@ -24,7 +24,10 @@ export default class Lexer {
 
 	readWhitespace() {
 		let whitespace = '';
-		while (this.position < this.input.length && /\s/.test(this.input[this.position])) {
+		while (
+			this.position < this.input.length &&
+			/\s/.test(this.input[this.position])
+		) {
 			whitespace += this.input[this.position];
 			this.position++;
 		}
