@@ -228,12 +228,14 @@ document.addEventListener('DOMContentLoaded', function () {
 			const loreDiv = document.createElement('div');
 			loreDiv.classList.add('saved-lore');
 
+			// Add the Skript code
 			const codePre = document.createElement('pre');
 			codePre.textContent = lore.code;
 			loreDiv.appendChild(codePre);
 
 			const buttonGroup = document.createElement('div');
 			buttonGroup.classList.add('button-group');
+			buttonGroup.classList.add('column');
 
 			const restoreButton = document.createElement('button');
 			restoreButton.textContent = 'Restore';
@@ -249,8 +251,25 @@ document.addEventListener('DOMContentLoaded', function () {
 				navigator.clipboard.writeText(lore.code).then(showCopyNotification);
 			});
 
-			buttonGroup.appendChild(restoreButton);
+			const deleteButton = document.createElement("button");
+			deleteButton.textContent = "Delete";
+			deleteButton.addEventListener("click", function () {
+				savedLores = savedLores.filter((l) => l.code !== lore.code);
+				saveLoresToLocalStorage();
+				updateSavedLores();
+			});
+
+			// Create a container for the preview and code
+			const container = document.createElement("div");
+			container.classList.add("lore-container");
+			loreDiv.appendChild(container);
+
+			// Add the preview
+			createLorePreview(container, lore.text);
+
 			buttonGroup.appendChild(copyButton);
+			buttonGroup.appendChild(restoreButton);
+			buttonGroup.appendChild(deleteButton);
 			loreDiv.appendChild(buttonGroup);
 			savedLoresContainer.appendChild(loreDiv);
 		});
@@ -266,6 +285,21 @@ document.addEventListener('DOMContentLoaded', function () {
 			savedLores = JSON.parse(saved);
 			updateSavedLores();
 		}
+	}
+
+	function createLorePreview(parent, text) {
+		const previewContainer = document.createElement("div");
+		previewContainer.classList.add("preview-tooltip");
+		const preview = document.createElement("div");
+		previewContainer.appendChild(preview);
+		const lines = text.split("\n");
+		lines.forEach((line) => {
+			const lineElement = document.createElement("div");
+			lineElement.classList.add("preview-line");
+			lineElement.innerHTML = parseSkriptFormatting(line);
+			preview.appendChild(lineElement);
+		});
+		parent.appendChild(previewContainer);
 	}
 
 	updateOutput();
