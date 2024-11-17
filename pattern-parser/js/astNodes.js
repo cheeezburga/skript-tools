@@ -20,8 +20,9 @@ export class ChoiceNode {
 }
 
 export class ParseTagNode {
-	constructor(node) {
+	constructor(tagName, node) {
 		this.type = 'ParseTagNode';
+		this.tagName = tagName;
 		this.node = node;
 	}
 }
