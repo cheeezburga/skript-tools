@@ -96,15 +96,11 @@ body.dark-mode {
 	display: inline-block;
 }
 
-#preview-content {
-	font-family: 'Minecraftia', monospace;
+.preview-line {
+	font-family: "Minecraftia", monospace;
 	white-space: pre;
 	font-size: 14px;
 	line-height: 1.2;
-}
-
-.preview-line {
-	white-space: pre;
 }
 
 #generated-code {
@@ -129,6 +125,10 @@ body.dark-mode {
 	justify-content: center;
 	gap: 10px;
 	margin-top: 10px;
+}
+
+.column {
+	flex-direction: column;
 }
 
 .button-group button {
@@ -285,6 +285,13 @@ body.dark-mode {
 	pointer-events: none;
 }
 
-body, .box, .theme-toggle, .button-group button, #lore-textarea, #code-container, .saved-lore, .saved-lore .button-group button {
+body,
+.box,
+.theme-toggle,
+.button-group button,
+#lore-textarea,
+#code-container,
+.saved-lore,
+.saved-lore .button-group button {
 	transition: none;
 }
