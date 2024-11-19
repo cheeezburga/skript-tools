@@ -156,8 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
 				classes.push('underline');
 			if (formatting.strikethrough)
 				classes.push('strikethrough');
-			const classAttr = classes.length ? ` class="${classes.join(' ')}"` : '';
-			return `<span style="${style}"${classAttr}>${escapeHtml(content)}</span>`;
+			const classAttr = classes.length ? ` class='${classes.join(' ')}'` : '';
+			return `<span style='${style}'${classAttr}>${escapeHtml(content)}</span>`;
 		}
 
 		return result;
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			return '';
 
 		let code = 'set lore of {_item} to ';
-		const formattedLines = loreLines.map(line => `"${line.replace(/"/g, '""')}"`);
+		const formattedLines = loreLines.map(line => `'${line.replace(/'/g, '''')}'`);
 		if (formattedLines.length === 1) {
 			code += formattedLines[0];
 		} else if (formattedLines.length === 2) {
@@ -228,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			const loreDiv = document.createElement('div');
 			loreDiv.classList.add('saved-lore');
 
-			// Add the Skript code
 			const codePre = document.createElement('pre');
 			codePre.textContent = lore.code;
 			loreDiv.appendChild(codePre);
@@ -251,20 +250,18 @@ document.addEventListener('DOMContentLoaded', function () {
 				navigator.clipboard.writeText(lore.code).then(showCopyNotification);
 			});
 
-			const deleteButton = document.createElement("button");
-			deleteButton.textContent = "Delete";
-			deleteButton.addEventListener("click", function () {
+			const deleteButton = document.createElement('button');
+			deleteButton.textContent = 'Delete';
+			deleteButton.addEventListener('click', function () {
 				savedLores = savedLores.filter((l) => l.code !== lore.code);
 				saveLoresToLocalStorage();
 				updateSavedLores();
 			});
 
-			// Create a container for the preview and code
-			const container = document.createElement("div");
-			container.classList.add("lore-container");
+			const container = document.createElement('div');
+			container.classList.add('lore-container');
 			loreDiv.appendChild(container);
 
-			// Add the preview
 			createLorePreview(container, lore.text);
 
 			buttonGroup.appendChild(copyButton);
@@ -288,14 +285,14 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 
 	function createLorePreview(parent, text) {
-		const previewContainer = document.createElement("div");
-		previewContainer.classList.add("preview-tooltip");
-		const preview = document.createElement("div");
+		const previewContainer = document.createElement('div');
+		previewContainer.classList.add('preview-tooltip');
+		const preview = document.createElement('div');
 		previewContainer.appendChild(preview);
-		const lines = text.split("\n");
+		const lines = text.split('\n');
 		lines.forEach((line) => {
-			const lineElement = document.createElement("div");
-			lineElement.classList.add("preview-line");
+			const lineElement = document.createElement('div');
+			lineElement.classList.add('preview-line');
 			lineElement.innerHTML = parseSkriptFormatting(line);
 			preview.appendChild(lineElement);
 		});
