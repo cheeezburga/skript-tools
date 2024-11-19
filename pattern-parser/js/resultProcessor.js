@@ -1,5 +1,4 @@
 export default class ResultProcessor {
-	
 	process(results) {
 		const totalPatterns = results.length;
 		let longestPattern = 0;
@@ -10,10 +9,8 @@ export default class ResultProcessor {
 		for (const result of results) {
 			const length = result.text.length;
 			totalLength += length;
-			if (length > longestPattern)
-				longestPattern = length;
-			if (length < shortestPattern)
-				shortestPattern = length;
+			if (length > longestPattern) longestPattern = length;
+			if (length < shortestPattern) shortestPattern = length;
 
 			for (const tag of result.tags) {
 				parseTagsSet.add(tag);
@@ -29,8 +26,7 @@ export default class ResultProcessor {
 			longestPattern,
 			shortestPattern,
 			averagePattern,
-			uniqueParseTags,
+			uniqueParseTags
 		};
 	}
-
 }

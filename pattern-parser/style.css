@@ -146,7 +146,8 @@ li.result:hover {
 	margin-bottom: 10px;
 }
 
-.options, .pagination {
+.options,
+.pagination {
 	display: flex;
 	align-items: center;
 	margin-bottom: 0;
@@ -194,6 +195,12 @@ li.result:hover {
 	font-size: 14px;
 }
 
-body, .box, #pattern, .stat-item, li.result, .tooltip, .copy-notification {
+body,
+.box,
+#pattern,
+.stat-item,
+li.result,
+.tooltip,
+.copy-notification {
 	transition: none;
 }

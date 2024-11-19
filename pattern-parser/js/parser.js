@@ -1,14 +1,6 @@
-import {
-	SequenceNode,
-	OptionalNode,
-	ChoiceNode,
-	ParseTagNode,
-	TextNode,
-	WhitespaceNode,
-} from './astNodes.js';
+import { SequenceNode, OptionalNode, ChoiceNode, ParseTagNode, TextNode, WhitespaceNode } from "./astNodes.js";
 
 export default class Parser {
-
 	constructor(tokens) {
 		this.tokens = tokens;
 		this.position = 0;
@@ -20,10 +12,7 @@ export default class Parser {
 
 	parseSequence(endToken = null) {
 		const nodes = [];
-		while (
-			this.position < this.tokens.length &&
-			(endToken === null || this.tokens[this.position].type !== endToken)
-		) {
+		while (this.position < this.tokens.length && (endToken === null || this.tokens[this.position].type !== endToken)) {
 			nodes.push(this.parseElement());
 		}
 		return new SequenceNode(nodes);
@@ -32,12 +21,12 @@ export default class Parser {
 	parseElement() {
 		const token = this.tokens[this.position];
 
-		if (token.type === 'WHITESPACE') {
+		if (token.type === "WHITESPACE") {
 			this.position++;
 			return new WhitespaceNode(token.value);
-		} else if (token.type === 'TEXT') {
+		} else if (token.type === "TEXT") {
 			const nextToken = this.tokens[this.position + 1];
-			if (nextToken?.type === ':') {
+			if (nextToken?.type === ":") {
 				const tagName = token.value;
 				this.position += 2;
 				const element = this.parseElement();
@@ -46,14 +35,14 @@ export default class Parser {
 				this.position++;
 				return new TextNode(token.value);
 			}
-		} else if (token.type === ':') {
+		} else if (token.type === ":") {
 			this.position++;
 			const element = this.parseElement();
 			return new ParseTagNode(null, element);
-		} else if (token.type === '[' || token.type === '(') {
+		} else if (token.type === "[" || token.type === "(") {
 			this.position++;
-			const endTokenType = token.type === '[' ? ']' : ')';
-			const isOptional = token.type === '[';
+			const endTokenType = token.type === "[" ? "]" : ")";
+			const isOptional = token.type === "[";
 			return this.parseGroup(endTokenType, isOptional);
 		} else {
 			throw new Error(`Unexpected token: ${token.type}`);
@@ -64,11 +53,8 @@ export default class Parser {
 		const choices = [];
 		let currentSequence = [];
 
-		while (
-			this.position < this.tokens.length &&
-			this.tokens[this.position].type !== endTokenType
-		) {
-			if (this.tokens[this.position].type === '|') {
+		while (this.position < this.tokens.length && this.tokens[this.position].type !== endTokenType) {
+			if (this.tokens[this.position].type === "|") {
 				this.position++;
 				choices.push(new SequenceNode(currentSequence));
 				currentSequence = [];
@@ -77,8 +63,7 @@ export default class Parser {
 			}
 		}
 
-		if (currentSequence.length > 0)
-			choices.push(new SequenceNode(currentSequence));
+		if (currentSequence.length > 0) choices.push(new SequenceNode(currentSequence));
 
 		this.expect(endTokenType);
 
@@ -91,8 +76,7 @@ export default class Parser {
 			node = new SequenceNode([]);
 		}
 
-		if (isOptional)
-			node = new OptionalNode(node);
+		if (isOptional) node = new OptionalNode(node);
 
 		return node;
 	}
@@ -102,8 +86,7 @@ export default class Parser {
 		if (token && token.type === type) {
 			this.position++;
 		} else {
-			throw new Error(`Expected token "${type}" but found "${token ? token.type : 'EOF'}"`);
+			throw new Error(`Expected token "${type}" but found "${token ? token.type : "EOF"}"`);
 		}
 	}
-	
 }
