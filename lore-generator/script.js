@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			return '';
 
 		let code = 'set lore of {_item} to ';
-		const formattedLines = loreLines.map(line => `'${line.replace(/'/g, '''')}'`);
+		const formattedLines = loreLines.map(line => `"${line.replace(/"/g, '""')}"`);
 		if (formattedLines.length === 1) {
 			code += formattedLines[0];
 		} else if (formattedLines.length === 2) {
